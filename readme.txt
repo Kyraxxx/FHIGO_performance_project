@@ -12,19 +12,20 @@ How it works:
 
 list of functions:
     Implemented:
-        main function with input and output
-        input control
-        look in the performance file
-        extract presetting corresponding to the best performance
+        main function with input control
+        look in the performance file for altitude table
+        presetting corresponding to the best economy
             CRITERIA:
             Biggest Range
             (if equal) Fastest
-            (if equal) Biggest RPM (to avoid excessive torque)
-
+            (if equal) Lowest RPM
+        presetting corresponding to the best economy
+            CRITERIA:
+            Fastest
+            (if equal) Biggest Range
+            (if equal) Lowest RPM
+        range remaining
     ###Possible extensions###
-        range & time remaining calculation (new input: fuel remaining)
         custom presetting when inputted an altitude that isn't in the table (linear regression)
-        choosing best performance vs. best speed (menu and 2 separate calulator functions in isolated file)
         cost index integration
-        climb perf integration
-        T/O & LDG dist. calculator integration
+        TB20 port
