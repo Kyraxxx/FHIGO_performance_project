@@ -25,7 +25,11 @@ list of functions:
             (if equal) Biggest Range
             (if equal) Lowest RPM
         range remaining
+        cost index integration v.1:
+            input a ci between 0 (most range) and 100 (fastest)
+    Planned:
+        cost index integration v.2:
+            input a fuel cost, a time cost as well as a cruise distance
     ###Possible extensions###
         custom presetting when inputted an altitude that isn't in the table (linear regression)
-        cost index integration
         TB20 port
