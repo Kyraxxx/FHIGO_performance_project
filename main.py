@@ -2,16 +2,18 @@ import calculator
 
 
 if __name__ == '__main__':
-    print("F-HIGO cost index calculation\n")
+    print("F-HIGO cruise calculator\n")
+
     while True:
-        usr_ci = input("Enter the cost index\n")
+        usr_dist = input("Enter the cruise distance (in Nm)\n")
         try:
-            ci = int(usr_ci)
-            if ci < 0 or ci > 100:
+            distance = float(usr_dist)
+            if distance < 0:
                 raise ValueError
             break
         except ValueError:
-            print("Value Error! The altitude must be a whole number between 0 and 100")
+            print("Value Error! The distance must be a value above 0Nm")
+
     while True:
         usr_alt = input("Enter the cruising altitude\n")
         try:
@@ -21,19 +23,27 @@ if __name__ == '__main__':
             break
         except ValueError:
             print("Value Error! The altitude must be a whole number between 0 and 15000")
+
     while True:
-        usr_fuel = input("Enter the fuel on board\n")
+        usr_fuel = input("Enter the fuel cost (in €/USG)\n")
         try:
-            fuel = float(usr_fuel)
-            if fuel < 7 or fuel > 88:
+            fuel_cost = float(usr_fuel)
+            if fuel_cost < 0:
                 raise ValueError
             break
         except ValueError:
-            print("Value Error! The FOB must be a value between 7 USG and 88 USG")
-    preset = calculator.cost_index(alt, ci)
-    remaining_range = int(((fuel - 7)/88)*preset.rng)
-    print("At {}ft in standard conditions, no wind:\n"
-          "PRESETTING: {} in.Hg {} RPM {} USG/H TAS {} kts\n"
-          "Range before final reserve {} Nm"
-          .format(alt, preset.map, preset.rpm, preset.gph, preset.tas, remaining_range))
+            print("Value Error! The fuel cost must be a value above 0€/USG")
+
+    while True:
+        usr_cost = input("Enter the hour cost (in €/hr)\n")
+        try:
+            time_cost = float(usr_cost)
+            if time_cost < 0:
+                raise ValueError
+            break
+        except ValueError:
+            print("Value Error! The time cost must be a value above 0€/hr")
+
+    cruise = calculator.cruise_planner(distance, alt, time_cost, fuel_cost)
+    print(cruise)
     input("\npress ENTER to continue")

@@ -6,6 +6,7 @@ class Presetting(object):
 
     Class used to store presettings from the performance file. Input a list [MAP, RPM, GPH, TAS, RNG]
     """
+
     def __init__(self, parameter_list: list):
         self.map = parameter_list[0]
         self.rpm = parameter_list[1]
@@ -21,6 +22,35 @@ class Presetting(object):
 
     def __str__(self):
         return str([self.map, self.rpm, self.gph])
+
+
+class Cruise(object):
+    """
+
+    Class used to represent a cruise with all its components. Parameter is a Presetting object
+    """
+
+    def __init__(self, distance: float, altitude: int, time: float, parameter: Presetting, cost: float):
+        self.dist = distance
+        self.alt = altitude
+        self.time = str(int(time)) + ':' + str(int((time % 1)*60))
+        self.param = parameter
+        self.cost = str((cost//0.01) / 100) + '€'
+
+    def __eq__(self, other):
+        return self.dist == other.dist and self.alt == other.alt and self.time == other.time \
+               and self.param == other.param and self.cost == other.cost
+
+    def __repr__(self):
+        return 'a cruise of {}Nm at {}ft costing {}'.format(self.dist, self.alt, self.cost)
+
+    def __str__(self):
+        return 'Cruise properties:\n' \
+               'Dist: {}Nm\n' \
+               'Alt: {}ft\n' \
+               'Time: {}\n' \
+               'Parameters: {}\n' \
+               'Cost: {}'.format(self.dist, self.alt, self.time, self.param, self.cost)
 
 
 def lookup_alt(alt: int) -> list:
@@ -121,13 +151,34 @@ def cost_index(alt: int, ci: int) -> Presetting:
     else:
         perf_array.sort(key=lambda line: line[-1], reverse=True)  # most to least endurance
         clean_array = remove_duplicates(perf_array, 'rng')
-    index = int(ci*(len(clean_array)-1)/100)
+    index = int(ci * (len(clean_array) - 1) / 100)
     return Presetting(clean_array[index])
+
+
+def cruise_planner(dist: float, alt: int, tcost: float, fcost: float) -> Cruise:
+    """
+
+    This is the main function: it takes the planning parameters of the cruise and returns the operating parameters.
+    These parameters are chosen as to minimize the overall cost of the cruise time-wise and fuel-wise.
+    :param dist: distance of the cruise, in Nm (>0)
+    :param alt: altitude of the cruise, in ft (0<alt<15000)
+    :param tcost: time cost, in €/h (>0)
+    :param fcost: fuel cost, in €/USG
+    :return:
+    """
+    perf = lookup_alt(alt)
+    best_cost = 1000000
+    for line in perf:
+        time = dist / line[-2]
+        cost = tcost*time + fcost*line[2]*time
+        if cost < best_cost:
+            best_cost = cost
+            best_time = time
+            best_param = Presetting(line)
+    return Cruise(dist, alt, best_time, best_param, best_cost)
 
 
 if __name__ == '__main__':
     alts = [2500, 5000, 7500, 10000, 12500, 15000]
     for alt in alts:
-        print('{}ft 100ci test returns {}'.format(alt, best_spd(alt) == cost_index(alt, 100)))
-        print('{}ft 0ci test returns {}'.format(alt, best_eco(alt) == cost_index(alt, 0)))
-
+        print(cruise_planner(100, alt, 85, 7.2).param)
